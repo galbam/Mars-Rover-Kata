@@ -11,18 +11,53 @@ let rover = {
   travelLog: []
 };
 
-let roverGrid = [];
 let roverGridSizeX = 10;
 let roverGridSizeY = 10;
+let roverGrid = [];
+let obstacle = "X";
+let numberOfObstacles = 4;
 // ======================
 
-//Start Rover 1
+//Start
+fillGrid();
+printGrid();
+
+fillObstacles();
+printGrid();
+
 commandList(rover, "rffrfflfrffb");
+
+//Grid
+function fillGrid(){
+  for(let x = 0; x < roverGridSizeX; x++) {
+    roverGrid[x] = [];
+    for(let y = 0; y < roverGridSizeY; y++) {
+      roverGrid[x][y] = ".";
+    }
+  }
+}
+function printGrid(){
+  console.log("GRID:");
+  for(let x = 0; x < roverGridSizeX; x++) {
+    let message = "";
+    for(let y = 0; y < roverGridSizeY; y++) {
+      message += roverGrid[x][y] + " ";
+    }
+    console.log(message);
+  }
+  console.log("");
+}
+function fillObstacles(){
+  for(let o = 0; o < numberOfObstacles; o++) {
+    let inX = Math.floor(Math.random() * roverGridSizeX); 
+    let inY = Math.floor(Math.random() * roverGridSizeY); 
+
+    roverGrid[inX][inY] = obstacle;
+  }
+}
 
 //Rotate
 function turnLeft(rover) {
-  console.log("turnLeft was called!");
-
   let currentDireccion = rover.direction;
   console.log(`Rover is facing  ${currentDireccion}  and turned left.`);
   
@@ -42,11 +77,8 @@ function turnLeft(rover) {
   }
 
   console.log(`Rover is now facing  ${rover.direction}`);
-  console.log("--------------");
 }
 function turnRight(rover) {
-  console.log("turnRight was called!");
-
   let currentDireccion = rover.direction;
   console.log(`Rover is facing  ${currentDireccion}  and turned right.`);
   
@@ -66,13 +98,10 @@ function turnRight(rover) {
   }
 
   console.log(`Rover is now facing  ${rover.direction}`);
-  console.log("--------------");
 }
 
 //Moves
 function moveForward(rover) {
-  console.log("moveForward was called");
-
   let currentPositionX = rover.positionX;
   let currentPositionY = rover.positionY;
   console.log(`Current Rover position: X: ${currentPositionX}  -  Y: ${currentPositionY}`);
@@ -107,13 +136,11 @@ function moveForward(rover) {
   rover.travelLog.push(`${rover.direction} - (${rover.positionX}, ${rover.positionY})`);
 
   console.log(`New Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
-  console.log("--------------");
+  console.log("");
 
   printTravelLog(rover);
 }
 function moveBackward(rover) {
-  console.log("moveBackward was called");
-
   let currentPositionX = rover.positionX;
   let currentPositionY = rover.positionY;
   console.log(`Current Rover position: X: ${currentPositionX}  -  Y: ${currentPositionY}`);
@@ -148,20 +175,21 @@ function moveBackward(rover) {
   rover.travelLog.push(`${rover.direction} - (${rover.positionX}, ${rover.positionY})`);
 
   console.log(`New Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
-  console.log("--------------");
+  console.log("");
 
   printTravelLog(rover);
 }
 
 //Print
 function printTravelLog(rover) {
-  console.log("");
+  console.log("TRAVEL LOG--------------------------------");
   console.log("Rover has been in the following positions:");
 
   for(var x = 0; x <= rover.travelLog.length - 1; x++) {     
     console.log(rover.travelLog[x]);
   }
 
+  console.log("------------------------------------------");
   console.log("");
 }
 
@@ -190,7 +218,11 @@ function commandList(rover, commands) {
 //Validaion functions
 function validatePositionYPos(rover){
   if(rover.positionY + 1 < roverGridSizeY){
-    return true;
+    if(roverGrid[rover.positionX][rover.positionY+1] != obstacle){
+      return true;
+    } else{
+      console.log(`Obstacle on: (${rover.positionX}, ${rover.positionY + 1})`);
+    }
   } else{
     console.log("Passing y...");
     return false;
@@ -198,7 +230,11 @@ function validatePositionYPos(rover){
 }
 function validatePositionYNeg(rover){
   if(rover.positionY - 1 >= 0){
-    return true;
+    if(roverGrid[rover.positionX][rover.positionY-1] != obstacle){
+      return true;
+    }else{
+      console.log(`Obstacle on: (${rover.positionX}, ${rover.positionY - 1})`);
+    }
   } else{
     console.log("Passing y...");
     return false;
@@ -206,7 +242,11 @@ function validatePositionYNeg(rover){
 }
 function validatePosotionXPos(rover){
   if(rover.positionX + 1 < roverGridSizeX){
-    return true;
+    if(roverGrid[rover.positionX + 1][rover.positionY] != obstacle){
+      return true;
+    } else{
+      console.log(`Obstacle on: (${rover.positionX + 1}, ${rover.positionY})`);
+    }
   } else{
     console.log("Passing x...");
     return false;
@@ -214,7 +254,11 @@ function validatePosotionXPos(rover){
 }
 function validatePosotionXNeg(rover){
   if(rover.positionX - 1 >= 0){
-    return true;
+    if(roverGrid[rover.positionX - 1][rover.positionY] != obstacle){
+      return true;
+    } else{
+      console.log(`Obstacle on: (${rover.positionX - 1}, ${rover.positionY})`);
+    }    
   } else{
     console.log("Passing x...");
     return false;
