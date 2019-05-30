@@ -27,6 +27,8 @@ printGrid();
 
 commandList(rover, "rffrfflfrffb");
 
+printTravelLogMatrixMode();
+
 //Grid
 function fillGrid(){
   for(let x = 0; x < roverGridSizeX; x++) {
@@ -37,11 +39,10 @@ function fillGrid(){
   }
 }
 function printGrid(){
-  console.log("GRID:");
   for(let x = 0; x < roverGridSizeX; x++) {
     let message = "";
     for(let y = 0; y < roverGridSizeY; y++) {
-      message += roverGrid[x][y] + " ";
+      message += (roverGrid[y][x] + " ");
     }
     console.log(message);
   }
@@ -59,6 +60,7 @@ function fillObstacles(){
 //Rotate
 function turnLeft(rover) {
   let currentDireccion = rover.direction;
+  console.log(`Current Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
   console.log(`Rover is facing  ${currentDireccion}  and turned left.`);
   
   switch(currentDireccion) {
@@ -80,6 +82,7 @@ function turnLeft(rover) {
 }
 function turnRight(rover) {
   let currentDireccion = rover.direction;
+  console.log(`Current Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
   console.log(`Rover is facing  ${currentDireccion}  and turned right.`);
   
   switch(currentDireccion) {
@@ -102,10 +105,6 @@ function turnRight(rover) {
 
 //Moves
 function moveForward(rover) {
-  let currentPositionX = rover.positionX;
-  let currentPositionY = rover.positionY;
-  console.log(`Current Rover position: X: ${currentPositionX}  -  Y: ${currentPositionY}`);
-
   switch(rover.direction) {
     case "N":
       //y - 1
@@ -133,18 +132,22 @@ function moveForward(rover) {
       break;
   }
 
-  rover.travelLog.push(`${rover.direction} - (${rover.positionX}, ${rover.positionY})`);
+  //Fill log
+  let roverTravelLog = {
+    travelDireccion: rover.direction,
+    travelX: rover.positionX,
+    travelY: rover.positionY
+  }
+  rover.travelLog.push(roverTravelLog);
 
+  console.log("");
+  console.log("Moving forward 1 position...");
   console.log(`New Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
   console.log("");
 
   printTravelLog(rover);
 }
 function moveBackward(rover) {
-  let currentPositionX = rover.positionX;
-  let currentPositionY = rover.positionY;
-  console.log(`Current Rover position: X: ${currentPositionX}  -  Y: ${currentPositionY}`);
-
   switch(rover.direction) {
     case "N":
       //y + 1
@@ -172,8 +175,16 @@ function moveBackward(rover) {
       break;
   }
 
-  rover.travelLog.push(`${rover.direction} - (${rover.positionX}, ${rover.positionY})`);
+  //Fill log
+  let roverTravelLog = {
+    travelDireccion: rover.direction,
+    travelX: rover.positionX,
+    travelY: rover.positionY
+  }
+  rover.travelLog.push(roverTravelLog);
 
+  console.log("");
+  console.log("Moving back 1 position...");
   console.log(`New Rover position: X: ${rover.positionX}  -  Y: ${rover.positionY}`);
   console.log("");
 
@@ -185,15 +196,28 @@ function printTravelLog(rover) {
   console.log("TRAVEL LOG--------------------------------");
   console.log("Rover has been in the following positions:");
 
-  for(var x = 0; x <= rover.travelLog.length - 1; x++) {     
+  for(let x = 0; x <= rover.travelLog.length - 1; x++) {     
     console.log(rover.travelLog[x]);
   }
 
   console.log("------------------------------------------");
+}
+function printTravelLogMatrixMode()
+{
   console.log("");
+  console.log("TRAVEL LOG - MATRIX MODE------------------");
+
+  for(let i = 0; i <= rover.travelLog.length - 1; i++) {     
+    roverGrid[rover.travelLog[i].travelX][rover.travelLog[i].travelY] = "R";
+  }
+
+  printGrid();
 }
 
 function commandList(rover, commands) {
+  console.log("-COMMANDS-")
+  console.log(commands);
+  console.log("");
   for(let i = 0; i<= commands.length - 1; i++) {
     switch(commands[i]){
       case "f":
@@ -218,7 +242,7 @@ function commandList(rover, commands) {
 //Validaion functions
 function validatePositionYPos(rover){
   if(rover.positionY + 1 < roverGridSizeY){
-    if(roverGrid[rover.positionX][rover.positionY+1] != obstacle){
+    if(roverGrid[rover.positionX][rover.positionY + 1] != obstacle){
       return true;
     } else{
       console.log(`Obstacle on: (${rover.positionX}, ${rover.positionY + 1})`);
@@ -230,7 +254,7 @@ function validatePositionYPos(rover){
 }
 function validatePositionYNeg(rover){
   if(rover.positionY - 1 >= 0){
-    if(roverGrid[rover.positionX][rover.positionY-1] != obstacle){
+    if(roverGrid[rover.positionX][rover.positionY -1] != obstacle){
       return true;
     }else{
       console.log(`Obstacle on: (${rover.positionX}, ${rover.positionY - 1})`);
